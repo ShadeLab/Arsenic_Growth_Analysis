@@ -66,6 +66,9 @@ results=gcFit(time, data, control)
 #make a data frame of the results
 results=data.frame(summary(results))
 
+#remove isolates that will be repeated
+results=results[!(results$TestId=="I2745"),]
+
 #save results table
 write.csv(results, "20160418_results")
 

@@ -49,7 +49,7 @@ data=t(data)
 
 
 #read in platemap
-platemap=read.csv("20160513_Platemap_MIC_Grofit.csv")
+platemap=read.csv("20160513_Platemap_MIC.csv")
 
 #combine data with platemap and remove well column
 data=cbind(platemap, data)

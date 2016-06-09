@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 #read in raw data
-data=data.frame(read.table("20160425_01_AsV_MIC_A06,07,12,24.asc"), row.names=TRUE)
+data=data.frame(read.table("20160519_AsIII_I16,46,48.asc.txt"), row.names=TRUE)
 
 
 #extract the time information, remove the extraneous "s"
@@ -13,26 +13,25 @@ time=as.numeric(sub("s", "",time))
 row.names(data)=NULL
 
 #define negative controls and subtract from dataset
-neg0=data.frame(data[,10])
-neg0=data.frame(rep(neg0, 12))
-neg10=data.frame(data[,22])
-neg10=data.frame(rep(neg10, 12))
-neg50=data.frame(data[,34])
-neg50=data.frame(rep(neg50, 12))
-neg100=data.frame(data[,46])
-neg100=data.frame(rep(neg100, 12))
-neg150=data.frame(data[,58])
-neg150=data.frame(rep(neg150, 12))
-neg200=data.frame(data[,70])
-neg200=data.frame(rep(neg200, 10))
-neg200=data.frame(cbind(neg200,data[,10],data[,46]))
-neg250=data.frame(data[,82])
-neg250=data.frame(rep(neg250,10))
-neg250=data.frame(cbind(neg250,data[,22],data[,58]))
-neg300=data.frame(data[,94])
-neg300=data.frame(rep(neg300,10))
-neg300=data.frame(cbind(neg300,data[,34], data[,10]))
-neg=data.frame(cbind(neg0,neg10,neg50,neg100,neg150,neg200,neg250,neg300))
+neg0=data.frame(data[,1])
+neg1=data.frame(data[,2])
+neg3=data.frame(data[,3])
+neg5=data.frame(data[,4])
+neg7=data.frame(data[,5])
+neg10=data.frame(data[,6])
+neg14=data.frame(data[,7])
+neg20=data.frame(data[,8])
+neg25=data.frame(data[,9])
+negA=data.frame(rep(data.frame(data[,1]),3))
+negB=data.frame(rep(data.frame(data[,2]),3))
+negC=data.frame(rep(data.frame(data[,3]),3))
+negD=data.frame(rep(data.frame(data[,4]),3))
+negE=data.frame(rep(data.frame(data[,5]),3))
+negF=data.frame(rep(data.frame(data[,6]),3))
+negG=data.frame(cbind(neg14,neg25,neg14))
+negH=data.frame(cbind(neg20,neg25,neg20))
+neg=data.frame(cbind(neg0,neg1,neg3,neg5,neg7,neg10,neg14,neg20,neg25))
+neg=data.frame(cbind(neg,negA,neg,negB,neg,negC,neg,negD,neg,negE,neg,negF,neg,negG,neg,negH))
 data= data - neg
 
 #make a time matrix based on number of observations and variables
@@ -48,7 +47,7 @@ data=t(data)
 
 
 #read in platemap
-platemap=read.csv("20160425_Platemap_High_MIC.csv")
+platemap=read.csv("20160519_Platemap_MIC_Grofit.csv")
 
 #combine data with platemap and remove well column
 data=cbind(platemap, data)
@@ -65,19 +64,15 @@ results=gcFit(time, data, control)
 #make a data frame of the results
 results=data.frame(summary(results))
 
-#remove isolates I do not need (replciates)
-results2=results[!(results$TestId=="A2707"),]
-results2=results[!(results$TestId=="A2712"),]
-
 #save results table
-write.csv(results, "20160425_results")
+write.csv(results, "20160519_results")
 
 #Find EC50
 EC50=drFit(results, control)
 EC50=data.frame(summary(EC50))
 
 #save EC50 results
-write.csv(EC50, "20160425_EC50")
+write.csv(EC50, "20160509_EC50")
 
 #extract maximum growth parameter from dataset
 mu=data.frame(results$mu.spline, results$reliability)
@@ -86,7 +81,7 @@ mu=data.frame(results$mu.spline, results$reliability)
 mu=cbind(platemap, mu)
 
 #add replicate number to data
-reps=data.frame(read.table("20160418_replicates.csv", header=TRUE))
+reps=data.frame(read.table("20160519_replicates.csv", header=TRUE))
 mu=cbind(mu, reps)
 
 #remove control values with replicate numbers
@@ -103,7 +98,6 @@ mu=inner_join(mu, normalization, by = c("Strain", "Replicate"))
 #normalize data
 norm=mu$results.mu.spline.x/mu$results.mu.spline.y
 norm=data.frame(norm)
-
 #add information to normalized data
 mu=cbind(mu, norm)
 
@@ -123,14 +117,15 @@ ggplot(data=stats, aes(x=Concentration, y=Average)) +
   geom_point(shape=1, size=2.5, color="black") +
   geom_errorbar(aes(ymax=stats$Average + stats$StDev, ymin=stats$Average - stats$StDev)) +
   scale_color_gradientn(colors=rainbow(6)) +
-  facet_wrap(~Strain)
+  facet_wrap(~Strain) +
+  ylim(-0.1,1.5)
 
 #Extract maximum OD590 and reliability data
 A=data.frame(results$A.spline, results$reliability)
 A=cbind(platemap, A)
 
 #add replicate number to data
-reps=data.frame(read.table("20160425_replicates.csv", header=TRUE))
+reps=data.frame(read.table("20160509_replicates.csv", header=TRUE))
 A=cbind(A, reps)
 
 #remove control values with replicate numbers
@@ -175,7 +170,7 @@ lambda=data.frame(results$lambda.spline, results$reliability)
 lambda=cbind(platemap, lambda)
 
 #add replicate number to data
-reps=data.frame(read.table("20160418_replicates.csv", header=TRUE))
+reps=data.frame(read.table("20160509_replicates.csv", header=TRUE))
 lambda=cbind(lambda, reps)
 
 #remove control values with replicate numbers
@@ -208,5 +203,53 @@ ggplot(data=stats, aes(x=Concentration, y=Average)) +
   geom_point(shape=1, size=2.5, color="black") +
   geom_errorbar(aes(ymax=stats$Average + stats$StDev, ymin=stats$Average - stats$StDev)) +
   scale_color_gradientn(colors=rainbow(6)) +
-  facet_wrap(~Strain)
+  facet_wrap(~Strain) +
+  ylim(-5, 25)
+
+#extract integral growth parameter from dataset
+int=data.frame(results$integral.spline, results$reliability)
+
+#add information to int
+int=cbind(platemap, int)
+
+#add replicate number to data
+reps=data.frame(read.table("20160509_replicates.csv", header=TRUE))
+int=cbind(int, reps)
+
+#remove control values with replicate numbers
+normalization=subset(int, Concentration %in% 0)
+
+#remove unimportant columns
+normalization=normalization[,-1]
+normalization=normalization[,-2]
+normalization=normalization[,-2]
+
+#add negatives back
+int=inner_join(int, normalization, by = c("Strain", "Replicate"))
+
+#normalize data
+norm=int$results.integral.spline.x/int$results.integral.spline.y
+norm=data.frame(norm)
+
+#add information to normalized data
+int=cbind(int, norm)
+
+#group data
+grouped=group_by(int, Strain, Concentration)
+
+#remove tagged(bad) wells from data analysis
+grouped2=grouped[!(grouped$results.reliability.x=="FALSE"),]
+
+#Calculate average and stdev
+stats=summarise(grouped2, Average=mean(norm), StDev=sd(norm))
+
+#plot data
+ggplot(data=stats, aes(x=Concentration, y=Average)) +
+  geom_line(size=1) +
+  geom_point(aes(color=Concentration), size=2.5) +
+  geom_point(shape=1, size=2.5, color="black") +
+  geom_errorbar(aes(ymax=stats$Average + stats$StDev, ymin=stats$Average - stats$StDev)) +
+  scale_color_gradientn(colors=rainbow(6)) +
+  facet_wrap(~Strain) + 
+  ylim(0,1)
 
