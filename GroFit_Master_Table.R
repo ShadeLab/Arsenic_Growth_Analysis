@@ -15,16 +15,25 @@ data=data.frame(do.call(rbind, lapply(list.files(pattern="*results"), read.csv))
 data=data[-1]
 orig.data=data
 
+#fix problem spline with models. (I did this manually by saving
+#the data as a .csv and adding a column "quality" that describes
+#whether or not I need to use the model)
+write.csv(orig.data, "20160610_data.csv")
+data=read.csv("20160610_data_model.csv")
+data$mu.spline <- with( data, ifelse( Quality == 0, mu.model, mu.spline ))
+
 #remove all model data since we are using spline
 data=data[,-grep("model", names(data))]
 data=data[,-grep(".bt", names(data))]
 data=data[,-grep("log.", names(data))]
 data=data[,-grep("nboot", names(data))]
+data=data[,-grep("Quality", names(data))]
 
 #add binary column to describe yes/no growth
 data$growth=as.integer(data$reliability=="TRUE")
 
 #remove unnecessary reliability column
+data=data[,-1]
 data=data[,-4]
 
 #Average data for each variable before melting
@@ -67,16 +76,39 @@ data=full.data[!(full.data$concentration=="0"),]
 #corresponding variables are listed horizontally
 data=dcast(setDT(data), formula= TestId ~ AddId + concentration, value.var=c("mu", "A", "lambda", "integral", "growth"))
 
+#call untested arsenic concentrations with NA growth 0 for no growth
+data$growth_V_150[is.na(data$growth_V_150)]=0 
+data$growth_V_200[is.na(data$growth_V_200)]=0 
+data$growth_V_250[is.na(data$growth_V_250)]=0 
+data$growth_V_300[is.na(data$growth_V_300)]=0 
+data$growth_III_3[is.na(data$growth_III_3)]=0 
+data$growth_III_5[is.na(data$growth_III_5)]=0 
+data$growth_III_7[is.na(data$growth_III_7)]=0 
+data$growth_III_10[is.na(data$growth_III_10)]=0 
+data$growth_III_14[is.na(data$growth_III_14)]=0 
+data$growth_III_20[is.na(data$growth_III_20)]=0 
+data$growth_III_25[is.na(data$growth_III_25)]=0 
+
 #make variable ID the row name
 data=data.frame(data, row.names=data[,1])
 
-#temporarily remove growth data (we do not need to scale this)
+#remove arsenite concentrations 20 and 25 because nothing grows there
+data=data[,-grep("III_20", names(data))]
+data=data[,-grep("III_25", names(data))]
+
+#temporarily remove growth data because it produces NAs in 
+#standardization
 growth=data[,grep("growth", names(data))]
 data=data.frame(data[,-grep("growth", names(data))])
-                 
+
 #Standardize data
 std=decostand(data, method="standardize")
-stdg=cbind(std, growth)
+
+#OR scaled data
+scl=scale(data, center=TRUE, scale=TRUE)
+
+#add back growth data
+stdg=data.frame(cbind(std, growth))
 
 #separate arsenate and arsenite
 As3=stdg[,!colnames(stdg) %in% grep("V", colnames(stdg), value=TRUE)]
@@ -87,21 +119,45 @@ As5=stdg[,!colnames(stdg) %in% grep("III", colnames(stdg), value=TRUE)]
 dist.stdg=dist(stdg)
 hc.stdg=hclust(dist.stdg)
 plot(hc.stdg)
+str(hc.stdg)
+order=hc.as3$order
+
+matrix=as.matrix(stdg)
+data.heatmap <- heatmap(matrix,  Rowv=NA, Colv=NA, scale="column", order(order))
+heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
 
 #arsenate
+
+#lets try removing colums with high concentrations
+As5=As5[,!colnames(As5) %in% grep("200", colnames(As5), value=TRUE)]
+As5=As5[,!colnames(As5) %in% grep("250", colnames(As5), value=TRUE)]
+As5=As5[,!colnames(As5) %in% grep("300", colnames(As5), value=TRUE)]
+As5=As5[,!colnames(As5) %in% grep("growth", colnames(As5), value=TRUE)]
+As5=As5[,!colnames(As5) %in% grep("integral", colnames(As5), value=TRUE)]
+
 dist.as5=dist(As5)
 hc.as5=hclust(dist.as5)
 plot(hc.as5)
+matrix=as.matrix(As5)
+heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
+
 
 #arsenite
 dist.as3=dist(As3)
 hc.as3=hclust(dist.as3)
 plot(hc.as3)
+matrix=as.matrix(As3)
+heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
+
+
+str(hc.as3)
+hc.as3$order
+range(hc.as3$height)
 
 #Look at heatmap for all datasets 
 #full
-a=as.matrix(dist.stdg)
-heatmap.2(a, dendrogram = "row", trace="none", col=bluered(20))
+a=data.matrix(data)
+heatmap.2(a, dendrogram = "row", trace="none", col=bluered(20), na.rm=TRUE)
 
 #arsenate
 b=as.matrix(dist.as5)
