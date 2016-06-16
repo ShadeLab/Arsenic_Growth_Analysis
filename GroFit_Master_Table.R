@@ -138,6 +138,9 @@ As5=std[,!colnames(std) %in% grep("III", colnames(std), value=TRUE)]
 
 ###Calculate euclideandistance for all datasets 
 ##full dataset
+
+std=std[,!colnames(std) %in% grep("integral", colnames(std), value=TRUE)]
+
 dist.std=dist(std)
 hc.std=hclust(dist.std)
 plot(hc.std)
