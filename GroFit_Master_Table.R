@@ -32,9 +32,37 @@ data=data[,-grep("Quality", names(data))]
 #add binary column to describe yes/no growth
 data$growth=as.integer(data$reliability=="TRUE")
 
-#remove unnecessary reliability column
+#remove unnecessary first column
 data=data[,-1]
-data=data[,-4]
+
+#Average data for each variable before melting
+stats=data %>%
+  group_by(TestId, AddId, concentration) %>%
+  summarise(mu=mean(mu.spline),
+            A=mean(A.spline), 
+            lambda=mean(lambda.spline), 
+            integral=mean(integral.spline),
+            growth=mean(growth))
+
+#Call samples with 1/3 growing no growth
+stats$growth[stats$growth<0.4]=0
+
+#Flag samples with 2/3 growth so we can remove poor replicate
+stats$flag[which(stats$growth==0 | stats$growth==1)] =0
+stats$flag[is.na(stats$flag)]=1
+
+#remove unnecessary columns from stats
+stats=stats[,-c(4:8)]
+
+#combine flagged sites with original data
+data=inner_join(data, stats, by=c("TestId", "AddId", "concentration"), copy=TRUE)
+
+#remove rows that are called false AND are flagged
+data=data[-which(data$reliability=="FALSE" & data$flag==1),]
+
+#remove flag and reliability columns as they are no longer necessary 
+data=data[,!colnames(data) %in% grep("reliability",colnames(data), value=TRUE)]
+data=data[,!colnames(data) %in% grep("flag",colnames(data), value=TRUE)]
 
 #Average data for each variable before melting
 data=data %>%
@@ -96,37 +124,48 @@ data=data.frame(data, row.names=data[,1])
 data=data[,-grep("III_20", names(data))]
 data=data[,-grep("III_25", names(data))]
 
-#temporarily remove growth data because it produces NAs in 
+#remove growth data where all isolates grew because it produces NAs in 
 #standardization
-growth=data[,grep("growth", names(data))]
-data=data.frame(data[,-grep("growth", names(data))])
+data=data.frame(data[,-grep("growth_III_1", names(data))])
+data=data.frame(data[,-grep("growth_V_10", names(data))])
 
 #Standardize data
 std=decostand(data, method="standardize")
 
-#OR scaled data
-scl=scale(data, center=TRUE, scale=TRUE)
-
-#add back growth data
-stdg=data.frame(cbind(std, growth))
-
 #separate arsenate and arsenite
-As3=stdg[,!colnames(stdg) %in% grep("V", colnames(stdg), value=TRUE)]
-As5=stdg[,!colnames(stdg) %in% grep("III", colnames(stdg), value=TRUE)]
+As3=std[,!colnames(std) %in% grep("V", colnames(std), value=TRUE)]
+As5=std[,!colnames(std) %in% grep("III", colnames(std), value=TRUE)]
 
-#Calculate euclideandistance for all datasets 
-#full dataset
-dist.stdg=dist(stdg)
-hc.stdg=hclust(dist.stdg)
-plot(hc.stdg)
-str(hc.stdg)
-order=hc.as3$order
+###Calculate euclideandistance for all datasets 
+##full dataset
+dist.std=dist(std)
+hc.std=hclust(dist.std)
+plot(hc.std)
 
-matrix=as.matrix(stdg)
-data.heatmap <- heatmap(matrix,  Rowv=NA, Colv=NA, scale="column", order(order))
-heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
+matrix=as.matrix(std)
+data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
 
-#arsenate
+##arsenate
+#first step is optional (see without integral)
+As5=As5[,!colnames(As5) %in% grep("integral", colnames(As5), value=TRUE)]
+
+dist.as5=dist(As5)
+hc.as5=hclust(dist.as5)
+plot(hc.as5)
+
+matrix=as.matrix(As5)
+data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
+
+##arsenite
+#first step is optional (see without integral)
+As3=As3[,!colnames(As3) %in% grep("integral", colnames(As3), value=TRUE)]
+
+dist.as3=dist(As3)
+hc.as3=hclust(dist.as3)
+plot(hc.as3)
+
+matrix=as.matrix(As3)
+data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
 
 #lets try removing colums with high concentrations
 As5=As5[,!colnames(As5) %in% grep("200", colnames(As5), value=TRUE)]
@@ -141,31 +180,14 @@ plot(hc.as5)
 matrix=as.matrix(As5)
 heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
 
+#lets look at arsenite without integral
+As3=As3[,!colnames(As3) %in% grep("integral", colnames(As3), value=TRUE)]
+As3=As3[,!colnames(As3) %in% grep("3", colnames(As3), value=TRUE)]
+As3=As3[,!colnames(As3) %in% grep("5", colnames(As3), value=TRUE)]
+As3=As3[,!colnames(As3) %in% grep("7", colnames(As3), value=TRUE)]
+As3=As3[,!colnames(As3) %in% grep("10", colnames(As3), value=TRUE)]
+As3=As3[,!colnames(As3) %in% grep("14", colnames(As3), value=TRUE)]
 
-#arsenite
-dist.as3=dist(As3)
-hc.as3=hclust(dist.as3)
-plot(hc.as3)
-matrix=as.matrix(As3)
-heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
-
-
-str(hc.as3)
-hc.as3$order
-range(hc.as3$height)
-
-#Look at heatmap for all datasets 
-#full
-a=data.matrix(data)
-heatmap.2(a, dendrogram = "row", trace="none", col=bluered(20), na.rm=TRUE)
-
-#arsenate
-b=as.matrix(dist.as5)
-heatmap.2(b, dendrogram = "row", trace="none", col=bluered(20))
-
-#arsenite
-c=as.matrix(dist.as3)
-heatmap.2(c, dendrogram = "row", trace="none", col=bluered(20))
 
 #will need to plot arsenate and arsenic separately 
 #due to different scales (concentrations), so first we will 
