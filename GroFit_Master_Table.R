@@ -21,6 +21,11 @@ orig.data=data
 write.csv(orig.data, "20160610_data.csv")
 data=read.csv("20160610_data_model.csv")
 data$mu.spline <- with( data, ifelse( Quality == 0, mu.model, mu.spline ))
+data$A.spline <- with( data, ifelse( Quality == 0, A.model, A.spline ))
+data$lambda.spline <- with( data, ifelse( Quality == 0, lambda.model, lambda.spline ))
+data$integral.spline <- with( data, ifelse( Quality == 0, integral.model, integral.spline ))
+
+
 
 #remove all model data since we are using spline
 data=data[,-grep("model", names(data))]
@@ -85,6 +90,9 @@ data$lambda[data$growth==0]=NA
 #remove negative control data
 data=data[!(data$TestId=="NEG"),]
 
+#adjust all negative lambda values to 1000 (just below lowest positive lambda)
+data$lambda[data$lambda<0]=1000
+
 #normalize data to growth without arsenic
 normalization=subset(data, concentration %in% 0)
 normalization=normalization[,-3]
@@ -130,7 +138,7 @@ data=data.frame(data[,-grep("growth_III_1", names(data))])
 data=data.frame(data[,-grep("growth_V_10", names(data))])
 
 #Standardize data
-std=decostand(data, method="standardize")
+std=decostand(data, method="standardize", na.rm=TRUE)
 
 #separate arsenate and arsenite
 As3=std[,!colnames(std) %in% grep("V", colnames(std), value=TRUE)]
@@ -138,9 +146,6 @@ As5=std[,!colnames(std) %in% grep("III", colnames(std), value=TRUE)]
 
 ###Calculate euclideandistance for all datasets 
 ##full dataset
-
-std=std[,!colnames(std) %in% grep("integral", colnames(std), value=TRUE)]
-
 dist.std=dist(std)
 hc.std=hclust(dist.std)
 plot(hc.std)
@@ -149,20 +154,14 @@ matrix=as.matrix(std)
 data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
 
 ##arsenate
-#first step is optional (see without integral)
-As5=As5[,!colnames(As5) %in% grep("integral", colnames(As5), value=TRUE)]
-
 dist.as5=dist(As5)
 hc.as5=hclust(dist.as5)
 plot(hc.as5)
 
 matrix=as.matrix(As5)
-data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
+data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=TRUE, scale="column")
 
 ##arsenite
-#first step is optional (see without integral)
-As3=As3[,!colnames(As3) %in% grep("integral", colnames(As3), value=TRUE)]
-
 dist.as3=dist(As3)
 hc.as3=hclust(dist.as3)
 plot(hc.as3)
@@ -170,29 +169,7 @@ plot(hc.as3)
 matrix=as.matrix(As3)
 data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
 
-#lets try removing colums with high concentrations
-As5=As5[,!colnames(As5) %in% grep("200", colnames(As5), value=TRUE)]
-As5=As5[,!colnames(As5) %in% grep("250", colnames(As5), value=TRUE)]
-As5=As5[,!colnames(As5) %in% grep("300", colnames(As5), value=TRUE)]
-As5=As5[,!colnames(As5) %in% grep("growth", colnames(As5), value=TRUE)]
-As5=As5[,!colnames(As5) %in% grep("integral", colnames(As5), value=TRUE)]
-
-dist.as5=dist(As5)
-hc.as5=hclust(dist.as5)
-plot(hc.as5)
-matrix=as.matrix(As5)
-heatmap.2(matrix, Rowv=TRUE, Colv=NA, scale="column", na.rm=TRUE, trace="none")
-
-#lets look at arsenite without integral
-As3=As3[,!colnames(As3) %in% grep("integral", colnames(As3), value=TRUE)]
-As3=As3[,!colnames(As3) %in% grep("3", colnames(As3), value=TRUE)]
-As3=As3[,!colnames(As3) %in% grep("5", colnames(As3), value=TRUE)]
-As3=As3[,!colnames(As3) %in% grep("7", colnames(As3), value=TRUE)]
-As3=As3[,!colnames(As3) %in% grep("10", colnames(As3), value=TRUE)]
-As3=As3[,!colnames(As3) %in% grep("14", colnames(As3), value=TRUE)]
-
-
-#will need to plot arsenate and arsenic separately 
+###will need to plot arsenate and arsenic separately 
 #due to different scales (concentrations), so first we will 
 #split dataset
 full.as5=full.data[!(full.data$AddId=="III"),]
@@ -268,7 +245,7 @@ control=grofit.control(parameter = 31, nboot.dr=100)
 #separate arsenite and arsenate in original data format 
 #because grofit's EC50 cannot handle two "treatment" 
 #types at once
-orig.as5=orig.data[!(orig.data$AddId=="III"),]
+orig.as5=data[!(data$AddId=="III"),]
 orig.as3=orig.data[!(orig.data$AddId=="V"),]
 
 #Calculate integral EC50 for arsenate but first remove A2733 
@@ -286,15 +263,15 @@ ggplot(data=As5.EC50, aes(x=Test, y=EC50)) +
 
 #Calculate max growth rate (mu) EC50 for arsenate
 #first change grofit control to reflect mu
-control.mu=grofit.control(parameter = 28, nboot.dr=100)
+control.mu=grofit.control(parameter = 29, nboot.dr=100)
 
 #remove A2716 and A2733 from dataset bc its not working
 #(maybe i will fix this by using a model)
-orig.as5.mu=orig.as5[!(orig.as5$TestId=="A2716"),]
-orig.as5.mu=orig.as5[!(orig.as5$TestId=="A2733"),]
+data2=orig.as5[!(orig.as5$TestId=="A2733"),]
+data2=data2[!(data2$TestId=="I2716"),]
 
 #test for EC50 (mu arsenate)
-As5.EC50.mu=drFit(orig.as5.mu, control.mu)
+As5.EC50.mu=drFit(data2, control.mu)
 As5.EC50.mu=data.frame(summary(As5.EC50.mu))
 
 #Plot arsenate max growth rate (mu) EC50s with StDev
@@ -306,13 +283,14 @@ ggplot(data=As5.EC50.mu, aes(x=Test, y=EC50)) +
 
 #Calculate max OD590 (A) EC50 for arsenate
 #first change grofit control to reflect A
-control.a=grofit.control(parameter = 28, nboot.dr=100)
+control.a=grofit.control(parameter = 31, nboot.dr=100)
 
 #remove problem A2733
-orig.as5.a=orig.as5[!(orig.as5$TestId=="A2733"),]
+data=data[,-1]
+data2=data[!(data$TestId=="I2747"),]
 
 #test for max OD590 EC50 in arsenate
-As5.EC50.a=drFit(orig.as5.a, control.a)
+As5.EC50.a=drFit(data2, control.a)
 As5.EC50.a=data.frame(summary(As5.EC50.a))
 
 #Plot arsenate max OD590 (A) EC50s with StDev
