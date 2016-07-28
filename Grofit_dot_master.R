@@ -1,3 +1,5 @@
+setwd("/Users/dunivint/Documents/GitHubRepos/Arsenic_Growth_Analysis/")
+
 library(ggplot2)
 library(dplyr)
 library(reshape2)
@@ -131,16 +133,6 @@ as5.long=melt(as5, id=c("TestId", "Genus", "concentration", "AddId"), measure=c(
 data.long=melt(data, id=c("TestId", "Genus", "concentration", "AddId"), measure=c("mu", "lambda"))
 
 
-setEPS()
-postscript("arsenite.grofit.eps")
-ggplot(data=data.long, aes(x=concentration, y=value, color=Genus, group_by(c("lambda", "mu", "A")))) +
-  geom_point() +
-  facet_grid(AddId+variable~Genus, scales="free_y") +
-  scale_color_brewer(type = "qual", palette = "Set1") +
-  labs(x="Concentration (mM)", y="Average") + 
-  theme_bw()
-dev.off()
-
 #plot & save arsenite graph
 setEPS()
 postscript("arsenite.grofit.eps")
@@ -157,6 +149,16 @@ postscript("arsenate.grofit.eps")
 ggplot(data=as5.long, aes(x=concentration, y=value, color=Genus, group_by(c("lambda", "mu", "A")))) +
   geom_point(size=1.5) +
   facet_grid(variable~Genus, scales="free_y") +
+  labs(x="Concentration (mM)", y="Average") + 
+  theme_bw()
+dev.off()
+
+
+setEPS()
+postscript("arsenate.grofit.eps")
+ggplot(data=data.long, aes(x=concentration, y=value, color=Genus, group_by(c("lambda", "mu", "A")))) +
+  geom_point(size=1.5) +
+  facet_grid(AddId+variable~Genus, scales="free_y") +
   labs(x="Concentration (mM)", y="Average") + 
   theme_bw()
 dev.off()
