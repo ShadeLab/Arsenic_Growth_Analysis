@@ -1,5 +1,4 @@
 library(ggplot2)
-library(grofit)
 library(dplyr)
 library(reshape2)
 library(data.table)
@@ -159,7 +158,7 @@ hc.as5=hclust(dist.as5)
 plot(hc.as5)
 
 matrix=as.matrix(As5)
-data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=TRUE, scale="column")
+data.heatmap <- heatmap(matrix,  Rowv=TRUE, Colv=NA, scale="column")
 
 ##arsenite
 dist.as3=dist(As3)

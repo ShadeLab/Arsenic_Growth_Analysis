@@ -1,5 +1,3 @@
-setwd("/Users/dunivint/Documents/GitHubRepos/Arsenic_Growth_Analysis/")
-
 library(ggplot2)
 library(dplyr)
 library(reshape2)
@@ -12,14 +10,14 @@ data=do.call(rbind, lapply(names, function(X) {
 ##remove duplicate isolates
 #make list of dates with isolate duplicates
 date=list("20150922_MIC_annotated.csv","20160418_MIC_annotated.csv","20150820_MIC_annotated.csv", "20160421_MIC_annotated.csv","20160425_MIC_annotated.csv","20160428_MIC_annotated.csv","20160516_MIC_annotated.csv")
-strain=list("I2716", "I2746", "I2748","I2702","I2718","I2720","A2727", "I2746","I2745","A2705","I2749","I2747","A2712","A2707","A2731")
+strain=list("I2716", "I2746", "I2742","I2748","I2702","I2718","I2720","A2727", "I2746","I2745","A2705","I2749","I2747","A2712","A2707","A2731")
 
 #remove this list
 data=data[-which(data$id %in% date & data$Strain %in% strain),]
 
 #repeat for dates not included before (wouldve artificially removed wells)
-date=list("20160501_MIC_annotated.csv","20160523_MIC_annotated.csv","20160527_MIC_annotated.csv")
-strain=list("I2748","I2747","A2723")
+date=list("20160501_MIC_annotated.csv","20160523_MIC_annotated.csv","20160527_MIC_annotated.csv","20160729_MIC_annotated.csv")
+strain=list("I2748","I2747","A2723","I2742b")
 
 #remove this new list
 data=data[-which(data$id %in% date & data$Strain %in% strain),]

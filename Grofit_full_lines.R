@@ -5,18 +5,19 @@ library(stats)
 
 #read in data by calling on files with "results" 
 #in the name, and combine all data from separate experiments
-data=data.frame(do.call(rbind, lapply(list.files(pattern="*results"), read.csv)))
+names=list.files(pattern="*results")
+data=do.call(rbind, lapply(names, function(X) {
+  data.frame(id = basename(X), read.csv(X))}))
 
 #remove unnecessary first column and rename a data file. 
-#we will need this structure for EC50 later
-data=data[-1]
+data=data[-2]
 orig.data=data
 
 #fix problem spline with models. (I did this manually by saving
 #the data as a .csv and adding a column "quality" that describes
 #whether or not I need to use the model)
-write.csv(orig.data, "20160610_data.csv")
-data=read.csv("20160610_data_model.csv")
+write.csv(orig.data, "orig_grofit_data.csv")
+data=read.csv("orig_grofit_data_model.csv")
 data$mu.spline <- with( data, ifelse( Quality == 0, mu.model, mu.spline ))
 data$A.spline <- with( data, ifelse( Quality == 0, A.model, A.spline ))
 data$lambda.spline <- with( data, ifelse( Quality == 0, lambda.model, lambda.spline ))
@@ -32,8 +33,8 @@ data=data[,-grep("Quality", names(data))]
 #add binary column to describe yes/no growth
 data$growth=as.integer(data$reliability=="TRUE")
 
-#remove unnecessary first column
-data=data[,-1]
+#remove unnecessary first column and second columns
+data=data[,-(1:2)]
 
 #Average data for each variable before melting
 stats=data %>%
@@ -64,8 +65,10 @@ data=data[-which(data$reliability=="FALSE" & data$flag==1),]
 data=data[,!colnames(data) %in% grep("reliability",colnames(data), value=TRUE)]
 data=data[,!colnames(data) %in% grep("flag",colnames(data), value=TRUE)]
 
-#remove negative control data
+#remove negative control data and other test well data
 data=data[!(data$TestId=="NEG"),]
+data=data[!(data$TestId=="I2742b"),]
+data=data[!(data$TestId=="x"),]
 
 #adjust all negative lambda values to 1000 (just below lowest positive lambda)
 #this only affect acinetobacter (A2705, A2716, I2759)
