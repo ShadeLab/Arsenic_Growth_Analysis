@@ -12,15 +12,15 @@ time=rawdata[1]
 rawdata=rawdata[,-1]
 
 #define negative controls and subtract from dataset
-neg0=data.frame(data[,91])
-neg10=data.frame(data[92])
-neg50=data.frame(data[93])
-neg100=data.frame(data[,94])
-neg150=data.frame(data[,95])
-neg200=data.frame(data[,96])
+neg0=data.frame(rawdata[,91])
+neg10=data.frame(rawdata[92])
+neg50=data.frame(rawdata[93])
+neg100=data.frame(rawdata[,94])
+neg150=data.frame(rawdata[,95])
+neg200=data.frame(rawdata[,96])
 neg=data.frame(cbind(neg0,neg10,neg50,neg100,neg150,neg200))
 neg=data.frame(rep(neg, 16))
-data= data - neg
+rawdata= rawdata - neg
 
 #add time back to data
 rawdata=cbind(time, rawdata)
