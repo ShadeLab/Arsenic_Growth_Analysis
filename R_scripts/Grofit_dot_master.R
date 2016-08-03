@@ -1,5 +1,3 @@
-setwd("/Users/dunivint/Documents/GitHubRepos/Arsenic_Growth_Analysis/")
-
 library(ggplot2)
 library(dplyr)
 library(reshape2)
@@ -17,14 +15,12 @@ orig.data=data
 #fix problem spline with models. (I did this manually by saving
 #the data as a .csv and adding a column "quality" that describes
 #whether or not I need to use the model)
-write.csv(orig.data, "20160610_data.csv")
-data=read.csv("20160610_data_model.csv")
+write.csv(orig.data, "orig_grofit_data.csv")
+data=read.csv("orig_grofit_data_model.csv")
 data$mu.spline <- with( data, ifelse( Quality == 0, mu.model, mu.spline ))
 data$A.spline <- with( data, ifelse( Quality == 0, A.model, A.spline ))
 data$lambda.spline <- with( data, ifelse( Quality == 0, lambda.model, lambda.spline ))
 data$integral.spline <- with( data, ifelse( Quality == 0, integral.model, integral.spline ))
-
-
 
 #remove all model data since we are using spline
 data=data[,-grep("model", names(data))]
@@ -37,7 +33,7 @@ data=data[,-grep("Quality", names(data))]
 data$growth=as.integer(data$reliability=="TRUE")
 
 #remove unnecessary first column
-data=data[,-1]
+data=data[,-(1:2)]
 
 #Average data for each variable before melting
 stats=data %>%
@@ -92,6 +88,8 @@ data$lambda[data$growth==0]=NA
 
 #remove negative control data
 data=data[!(data$TestId=="NEG"),]
+data=data[!(data$TestId=="I2742b"),]
+data=data[!(data$TestId=="x"),]
 
 #adjust all negative lambda values to 1000 (just below lowest positive lambda)
 data$lambda[data$lambda<0]=1000
@@ -128,9 +126,9 @@ as3=as3[!as3$concentration %in% grep("2", as3$concentration, value=TRUE),]
 data=data[!data$concentration %in% grep("25", data$concentration, value=TRUE),]
 data=data[!data$concentration %in% grep("20 ", data$concentration, value=TRUE),]
 
+#rearrange data into long format for plotting
 as3.long=melt(as3, id=c("TestId", "Genus", "concentration", "AddId"), measure=c("mu", "lambda"))
 as5.long=melt(as5, id=c("TestId", "Genus", "concentration", "AddId"), measure=c("mu", "lambda"))
-data.long=melt(data, id=c("TestId", "Genus", "concentration", "AddId"), measure=c("mu", "lambda"))
 
 
 #plot & save arsenite graph
@@ -149,16 +147,6 @@ postscript("arsenate.grofit.eps")
 ggplot(data=as5.long, aes(x=concentration, y=value, color=Genus, group_by(c("lambda", "mu", "A")))) +
   geom_point(size=1.5) +
   facet_grid(variable~Genus, scales="free_y") +
-  labs(x="Concentration (mM)", y="Average") + 
-  theme_bw()
-dev.off()
-
-
-setEPS()
-postscript("arsenate.grofit.eps")
-ggplot(data=data.long, aes(x=concentration, y=value, color=Genus, group_by(c("lambda", "mu", "A")))) +
-  geom_point(size=1.5) +
-  facet_grid(AddId+variable~Genus, scales="free_y") +
   labs(x="Concentration (mM)", y="Average") + 
   theme_bw()
 dev.off()
