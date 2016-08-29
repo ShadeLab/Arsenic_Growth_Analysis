@@ -70,9 +70,9 @@ data=data[!(data$TestId=="NEG"),]
 data=data[!(data$TestId=="I2742b"),]
 data=data[!(data$TestId=="x"),]
 
-#adjust all negative lambda values to 1000 (just below lowest positive lambda)
+#adjust all negative lambda values to 20 (just below lowest positive lambda)
 #this only affect acinetobacter (A2705, A2716, I2759)
-data$lambda.spline[data$lambda.spline<0]=1000
+data$lambda.spline[data$lambda.spline<0]=20
 
 ##normalize data to growth without arsenic
 #extract data without arsenic
@@ -198,7 +198,7 @@ ggplot(data=as3, aes(x=concentration, y=lambda, color=concentration)) +
   geom_point(aes(color=concentration), size=2) +
   geom_point(shape=1, size=2, color="black") +
   geom_errorbar(aes(ymax=as3$lambda+as3$lambda.sd, ymin=as3$lambda-as3$lambda.sd), color="black") +
-  facet_wrap(~TestId) +
+  facet_wrap(~TestId, scales="free_y") +
   labs(x="Concentration (mM)", y="Average") + 
   scale_color_gradientn(colors=rainbow(6)) +
   theme_bw()
