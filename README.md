@@ -25,25 +25,25 @@ This folder contains all raw data, contextual data, individual analysis, and met
 ##Workflow
 1. Individual experiment (plate) analysis
     * Growth curves were made for each individual experiment (plate)
-      * Script: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/Date_Growth_analysis.R
-      * Input: Date_AsType_MIC_IsolateAbbreviation.csv, Date_platemap.csv, Time,wells.csv
-      * Output: Date_MIC_annotated.csv
+      * __Script__: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/Date_Growth_analysis.R
+      * __Input__: Date_AsType_MIC_IsolateAbbreviation.csv, Date_platemap.csv, Time,wells.csv
+      * __Output__: Date_MIC_annotated.csv
     * Each experiment (plate) was analyzed using Grofit
-      * Script: /Arsenic_Growth_Analysis/R_scripts/Grofit/Date_Data_Analysis.R
-      * Input: Date_AsType_MIC_IsolateAbbreviation.csv, Date_platemap.csv
-      * Optional input: Date_platemap_grofit.csv (used when certain wells were removed from analysis (less than 5 pts >0) 
-      * Output: Date_results.csv
+      * __Script__: /Arsenic_Growth_Analysis/R_scripts/Grofit/Date_Data_Analysis.R
+      * __Input__: Date_AsType_MIC_IsolateAbbreviation.csv, Date_platemap.csv
+      * __Optional input__: Date_platemap_grofit.csv (used when certain wells were removed from analysis (less than 5 pts >0)
+      * __Output__: Date_results.csv
       
 2. Meta analysis
     * All final growth curves from experiment were compiled for Figure S1
-      * Script: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/MIC_curves_FigureS1.R
-      * Input: each individual Date_MIC_annotated.csv
-      * Output: Figure S1
+      * __Script__: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/MIC_curves_FigureS1.R
+      * __Input__: each individual Date_MIC_annotated.csv
+      * __Output__: Figure S1
     * All grofit data was compiled to make individual growth parameter curves for each isolate (Figure S2)
-      * Script: /Arsenic_Growth_Analysis/R_scripts/Grofit/Meta_analysis_FigureS2.R
-      * Input: each individual Date_results.csv, orig_grofit_model.csv
-      * Output: orig_grofit.csv, Figure S2
+      * __Script__: /Arsenic_Growth_Analysis/R_scripts/Grofit/Meta_analysis_FigureS2.R
+      * __Input__: each individual Date_results.csv, orig_grofit_model.csv
+      * __Output__: orig_grofit.csv, Figure S2
     * Grofit data for max growth rate and lag time were combined by genus for all isolates (Figure 4)
-      * Script: /Arsenic_Growth_Analysis/R_scripts/Grofit/Meta_analysis_Figure4.R
-      * Input: Date_results.csv, isolate_genus.csv, orig_grofit_model.csv
-      * Output: orig_grofit.csv, Figure 4
+      * __Script__: /Arsenic_Growth_Analysis/R_scripts/Grofit/Meta_analysis_Figure4.R
+      * __Input__: Date_results.csv, isolate_genus.csv, orig_grofit_model.csv
+      * __Output__: orig_grofit.csv, Figure 4
