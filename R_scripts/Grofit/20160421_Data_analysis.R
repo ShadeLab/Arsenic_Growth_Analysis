@@ -68,13 +68,6 @@ results=data.frame(summary(results))
 #save results table
 write.csv(results, "20160421_results")
 
-#Find EC50
-EC50=drFit(results, control)
-EC50=data.frame(summary(EC50))
-
-#save EC50 results
-write.csv(EC50, "20160421_EC50")
-
 #extract maximum growth parameter from dataset
 mu=data.frame(results$mu.spline, results$reliability)
 
