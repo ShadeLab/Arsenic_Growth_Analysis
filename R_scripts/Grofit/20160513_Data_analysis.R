@@ -69,21 +69,6 @@ results=data.frame(summary(results))
 #save results table
 write.csv(results, "20160513_results")
 
-#remove A2733 in arsenate because EC50 wasn't working
-results2=results[!(results$TestId=="A2733V"),]
-
-#Find EC50
-EC50=drFit(results2, control)
-EC50=data.frame(summary(EC50))
-
-#separate arsenate and arsenic EC50 results
-EC50_AsIII=EC50[!(EC50$Test=="A2707"),]
-EC50_AsV=subset(EC50, Test %in% "A2707")
-
-#save EC50 results
-write.csv(EC50_AsV, "20160513_EC50_AsV")
-write.csv(EC50_AsIII, "20160513_EC50_AsIII")
-
 #extract maximum growth parameter from dataset
 mu=data.frame(results$mu.spline, results$reliability)
 
