@@ -22,7 +22,7 @@ This folder contains all raw data, contextual data, individual analysis, and met
 * __Final growth curves for all isolates__: MIC_curves_FigureS1.R
 
 ##Workflow
-__1. Individual experiment (plate) analysis__
+1. Individual experiment (plate) analysis
     * Growth curves were made for each individual experiment (plate)
       * Script: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/Date_Growth_analysis.R
       * Input: Date_AsType_MIC_IsolateAbbreviation.csv, Date_platemap.csv, Time,wells.csv
@@ -33,7 +33,7 @@ __1. Individual experiment (plate) analysis__
       * Optional input: Date_platemap_grofit.csv (used when certain wells were removed from analysis (less than 5 pts >0) 
       * Output: Date_results.csv
       
-__2. Meta analysis__
+2. Meta analysis
     * All final growth curves from experiment were compiled for Figure S1
       * Script: /Arsenic_Growth_Analysis/R_scripts/Growth_curves/MIC_curves_FigureS1.R
       * Input: each individual Date_MIC_annotated.csv
