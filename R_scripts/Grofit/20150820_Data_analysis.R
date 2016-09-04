@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 #read in raw data
-data=data.frame(read.table("082015 72h AsV MIC I2702, 06, 18, 20, 46.asc.txt"), row.names=TRUE)
+data=data.frame(read.table("20150820_AsV_MIC_I2702,06,18,20,46.asc"), row.names=TRUE)
 
 #extract the time information, remove the extraneous "s"
 time=row.names(data)
