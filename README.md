@@ -11,6 +11,7 @@ This folder contains all raw data, contextual data, individual analysis, and met
 * __Header for data__: Time,wells.csv
 * __Compiled grofit data__: orig_grofit.csv
 * __Compiled grofit data with binary column__ (Quality) describing whether to use model (0) or spline (1): orig_grofit_model.csv
+* __Isolate and genus key__: isolate_genus.csv
 
 ### /Arsenic_Growth_Analysis/R_scripts/Grofit/
 * __Grofit run for individual experiment__: Date_Data_Analysis.R
@@ -44,5 +45,5 @@ This folder contains all raw data, contextual data, individual analysis, and met
       * Output: orig_grofit.csv, Figure S2
     * Grofit data for max growth rate and lag time were combined by genus for all isolates (Figure 4)
       * Script: /Arsenic_Growth_Analysis/R_scripts/Grofit/Meta_analysis_Figure4.R
-      * Input: Date_results.csv, orig_grofit_model.csv
+      * Input: Date_results.csv, isolate_genus.csv, orig_grofit_model.csv
       * Output: orig_grofit.csv, Figure 4
