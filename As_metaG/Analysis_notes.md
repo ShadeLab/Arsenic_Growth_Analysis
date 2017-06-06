@@ -11,7 +11,7 @@
 
 
 ### June 6, 2017
-Check the quality of Cen13 fastq files: Do this for both fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.fastq.gz and fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001.fastq.gz
+1. Check the quality of Cen13 fastq files: Do this for both fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.fastq.gz and fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001.fastq.gz
 ```
 #!/bin/bash -login
  
@@ -40,3 +40,16 @@ fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.fastq.gz
 ```
 
 Output: 
+[R1](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001_fastqc.html): Quality looks good, but will still trim
+[R2](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001_fastqc.html): Quality is not ideal. Will trim
+
+2. Quality trim data files using fastx
+```
+#load modules
+module load GNU/4.4.5
+module load FASTX/0.0.14
+
+#quality filter
+fastq_quality_filter -Q33 -q 30 -p 50 -z -i Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001.fastq -o Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001.qc.fastq.gz
+fastq_quality_filter -Q33 -q 30 -p 50 -z -i Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.fastq -o Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.qc.fastq.gz
+```
