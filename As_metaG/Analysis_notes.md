@@ -7,7 +7,7 @@
 * Examine the overlap between gene presence and As resistant isolate collection. 
 
 ### Table of contents
-* [June 6, 2017]()
+* [June 6, 2017](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/Analysis_notes.md#june-6-2017)
 
 
 ### June 6, 2017
