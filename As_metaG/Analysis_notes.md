@@ -40,8 +40,8 @@ fastqc Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001.fastq.gz
 ```
 
 Output: 
-[R1](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001_fastqc.html): Quality looks good, but will still trim
-[R2](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001_fastqc.html): Quality is not ideal. Will trim
+* [R1](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R1_001_fastqc.html): Quality looks good, but will still trim
+* [R2](https://github.com/ShadeLab/Arsenic_Growth_Analysis/blob/master/As_metaG/data/Cen13_mgDNA_Pooled_CTTGTA_L002_R2_001_fastqc.html): Quality is not ideal. Will trim
 
 2. Quality trim data files using fastx
 ```
