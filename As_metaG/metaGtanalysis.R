@@ -97,7 +97,8 @@ data.ncbi$Organism <- data.ncbi$query
 
 #add ncbi information to data
 data.annotated <- data.annotated %>%
-  left_join(data.ncbi, by = "Organism")
+  left_join(data.ncbi, by = "Organism") %>%
+  unique()
 
 #replace NA in phylum with uncultured bacterium
 data.annotated$phylum[is.na(data.annotated$phylum)] = "uncultured bacterium"
