@@ -3,6 +3,7 @@ library(dplyr)
 library(reshape2)
 library(stats)
 
+setwd("/Users/dunivint/Documents/GitHubRepos/Arsenic_Growth_Analysis/")
 #read in data by calling on files with "results" 
 #in the name, and combine all data from separate experiments
 data=data.frame(do.call(rbind, lapply(list.files(pattern="*results"), read.csv)))
@@ -102,20 +103,38 @@ full.data=data %>%
   group_by(TestId, AddId, concentration) %>%
   summarise(mu=mu.x/mu.y,
             lambda=lambda.x/lambda.y,
+            A=A.x/A.y,
             mu.sd=mu.sd.x/mu.y,
-            lambda.sd=lambda.sd.x/lambda.y)
+            lambda.sd=lambda.sd.x/lambda.y,
+            A.sd=A.sd.x/A.sd.y)
 
 #remove rows with no arsenic (controls)
 data=full.data[!(full.data$concentration=="0"),]
-
-#remove growth and integral because we do not need them for analysis
-data=full.data[,!colnames(full.data) %in% grep("gr", colnames(full.data), value=TRUE)]
 
 #read in genus information
 genus=read.csv("isolate_genus.csv")
 
 #merge genus with data
 data=inner_join(genus, data, by="TestId")
+
+#cast and extract data for clustering
+lambda.cast <- dcast(data, TestId~AddId+concentration, value.var = "lambda")
+mu.cast <- dcast(data, TestId~AddId+concentration, value.var = "mu")
+A.cast <- dcast(data, TestId~AddId+concentration, value.var = "A")
+
+#combine information for all parameters
+full.cast <- cbind(lambda.cast, mu.cast, A.cast)
+
+#define row names
+rownames(full.cast) <- full.cast$TestId
+
+#remove isolates with few genera representatives
+few <- c("A2727", "A2712", "I2748", "I2749", "I2746", "I2747")
+full.cast <- full.cast %>%
+  subset(!TestId %in% few)
+
+#cluster & plot
+plot(hclust(dist(full.cast[,c(2,10,18,26,34,42)])))
 
 #separate arsenate and arsenite
 as5=data[-which(data$AddId=="III"),]
