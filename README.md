@@ -1,3 +1,25 @@
+## Github Repository for
+# Taxonomically-linked growth phenotypes during arsenic stress among arsenic resistant bacteria isolated from soils overlying the Centralia coal seam fire
+## by Taylor K. Dunivin, Justine Miller, Ashley Shade 
+
+<i>This work is published.</i>
+
+### Data
+All sequences >200 bp were submitted to NCBI, and sequences can be accessed from GenBank with the following accession numbers: 16S rRNA KX825887- KX825911, arsC KY405022- KY405029, ACR3(2) KY405030- KY405032, and arsB KY405033- KY405040.
+
+### To cite this work or code
+Dunivin TK, Miller J, Shade A (2018) Taxonomically-linked growth phenotypes during arsenic stress among arsenic resistant bacteria isolated from soils overlying the Centralia coal seam fire. PLoS ONE 13(1): e0191893. https://doi.org/10.1371/journal.pone.0191893
+
+### Abstract
+Arsenic (As), a toxic element, has impacted life since early Earth. Thus, microorganisms have evolved many As resistance and tolerance mechanisms to improve their survival outcomes given As exposure. We isolated As resistant bacteria from Centralia, PA, the site of an underground coal seam fire that has been burning since 1962. From a 57.4°C soil collected from a vent above the fire, we isolated 25 unique aerobic As resistant bacterial strains spanning seven genera. We examined their diversity, resistance gene content, transformation abilities, inhibitory concentrations, and growth phenotypes. Although As concentrations were low at the time of soil collection (2.58 ppm), isolates had high minimum inhibitory concentrations (MICs) of arsenate and arsenite (>300 mM and 20 mM respectively), and most isolates were capable of arsenate reduction. We screened isolates (PCR and sequencing) using 12 published primer sets for six As resistance genes (AsRGs). Genes encoding arsenate reductase (arsC) and arsenite efflux pumps (arsB, ACR3(2)) were present, and phylogenetic incongruence between 16S rRNA genes and AsRGs provided evidence for horizontal gene transfer. A detailed investigation of differences in isolate growth phenotypes across As concentrations (lag time to exponential growth, maximum growth rate, and maximum OD590) showed a relationship with taxonomy, providing information that could help to predict an isolate’s performance given As exposure in situ. Our results suggest that microbiological management and remediation of environmental As could be informed by taxonomically-linked As tolerance, potential for resistance gene transferability, and the rare biosphere.
+
+### Funding
+The project was supported by start-up funds from Michigan State University to AS. This work was supported in part by Michigan State University through computational resources provided by the [Institute for Cyber-Enabled Research](https://icer.msu.edu/). 
+
+### More info
+[ShadeLab](http://ashley17061.wixsite.com/shadelab/home)
+
+
 # Arsenic_Growth_Analysis
 This folder contains all raw data, contextual data, individual analysis, and meta analysis for growth curves of arsenic resistant isolates cultivated from surface soil of an active vent in Centralia, PA in 2014. 
 
