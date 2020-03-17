@@ -23,7 +23,7 @@ The project was supported by start-up funds from Michigan State University to AS
 # Arsenic_Growth_Analysis
 This folder contains all raw data, contextual data, individual analysis, and meta analysis for growth curves of arsenic resistant isolates cultivated from surface soil of an active vent in Centralia, PA in 2014. 
 
-##File organization
+## File organization
 ### /Arsenic_Growth_Analysis/
 * __Raw data file__: Date_AsType_MIC_IsolateAbbreviation.csv
 * __Plate organization__ (created manually): Date_platemap.csv
